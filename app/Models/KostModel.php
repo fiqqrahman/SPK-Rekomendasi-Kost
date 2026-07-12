@@ -6,10 +6,13 @@ use CodeIgniter\Model;
 
 class KostModel extends Model
 {
+    // Mengunci identitas nama tabel di database
     protected $table            = 'kosts';
     protected $primaryKey       = 'id';
     protected $returnType       = 'array';
-    protected $allowedFields    = ['name', 'price', 'latitude', 'longitude', 'is_active'];
+
+    // BENTENG WHITELIST: Menambahkan 'user_id' dan 'is_full' agar lolos sensor Mass Assignment
+    protected $allowedFields    = ['user_id', 'name', 'price', 'latitude', 'longitude', 'is_active', 'is_full'];
 
     /**
      * Mengambil data kost aktif dengan agregasi poin fitur menggunakan 1 query tunggal.

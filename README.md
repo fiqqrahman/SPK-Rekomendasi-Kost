@@ -32,4 +32,7 @@ Sebelum menjalankan proyek ini di lingkungan lokal, pastikan perangkat sudah mem
 - **Local Server:** Laragon / XAMPP[cite: 2]
 
 ---
+<owner1@gmail.com>
+<owner2@gmail.com>
+<owner3@gmail.com>
 
