@@ -32,7 +32,7 @@
 
     <div class="container mx-auto px-4 py-10 max-w-5xl">
 
-        <header class="mb-10 border-b border-slate-800 pb-6 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+        <header class="mb-10 border-b border-slate-800 pb-6 flex flex-col md:flex-row md:items-center md:justify-between gap-4">
             <div>
                 <div class="inline-flex items-center gap-2 bg-teal-500/10 text-teal-400 px-3 py-1 rounded-full text-xs font-semibold tracking-wide uppercase mb-2 border border-teal-500/20">
                     Property Owner Center
@@ -44,10 +44,24 @@
                     Registrasikan properti baru dan kelola ketersediaan status hunian kamar antum dalam satu layar terintegrasi.
                 </p>
             </div>
-            <div class="flex items-center gap-3">
+
+            <div class="flex flex-wrap items-center gap-3 md:self-end">
+
+                <div class="flex items-center gap-2.5 bg-[#1e293b] border border-slate-700/60 px-3.5 py-2 rounded-xl text-xs shadow-sm">
+                    <span class="w-2 h-2 rounded-full bg-emerald-400 shadow-sm shadow-emerald-400/50"></span>
+                    <div class="text-left">
+                        <span class="text-slate-400 block text-[9px] uppercase font-bold tracking-wider mb-0.5">Sesi Aktif</span>
+                        <span class="text-white font-semibold font-mono">
+                            <?= esc(session()->get('username')) ?>
+                            <span class="text-slate-500 font-sans font-normal">(<?= esc(session()->get('email')) ?>)</span>
+                        </span>
+                    </div>
+                </div>
+
                 <a href="<?= base_url('/') ?>" class="inline-flex items-center gap-2 bg-[#1e293b] hover:bg-slate-700 border border-slate-700 text-slate-300 px-4 py-2.5 rounded-xl text-xs font-bold uppercase tracking-wider transition">
                     ← Monitor SPK
                 </a>
+
                 <a href="<?= base_url('/logout') ?>" class="inline-flex items-center gap-2 bg-rose-500/10 hover:bg-rose-500/20 border border-rose-500/30 text-rose-400 px-4 py-2.5 rounded-xl text-xs font-bold uppercase tracking-wider transition shadow-sm shadow-rose-950/20">
                     🚪 Keluar
                 </a>

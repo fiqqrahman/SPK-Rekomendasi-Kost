@@ -14,7 +14,7 @@ class Auth extends BaseController
     }
 
     // 1. Tampilkan Halaman Form Login
-    public function login(): string
+    public function login(): \CodeIgniter\HTTP\RedirectResponse|string
     {
         if (session()->get('is_logged_in')) {
             return redirect()->to(base_url('/owner/dashboard'));

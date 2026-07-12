@@ -1,6 +1,17 @@
 <!DOCTYPE html>
 <html lang="id">
 
+<?php
+/**
+ * @var array $campuses
+ * @var array $results
+ * @var int $selectedCampusId
+ * @var object|null $currentCampus
+ * @var string $selectedLifestyle
+ */
+$campuses = $campuses ?? []; // Ensure $campuses is always an array to prevent "Undefined variable" errors
+?>
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
