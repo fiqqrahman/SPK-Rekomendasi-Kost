@@ -44,12 +44,27 @@
                     Registrasikan properti baru dan kelola ketersediaan status hunian kamar antum dalam satu layar terintegrasi.
                 </p>
             </div>
-            <div>
+            <div class="flex items-center gap-3">
                 <a href="<?= base_url('/') ?>" class="inline-flex items-center gap-2 bg-[#1e293b] hover:bg-slate-700 border border-slate-700 text-slate-300 px-4 py-2.5 rounded-xl text-xs font-bold uppercase tracking-wider transition">
-                    ← Monitor Peringkat SPK
+                    ← Monitor SPK
+                </a>
+                <a href="<?= base_url('/logout') ?>" class="inline-flex items-center gap-2 bg-rose-500/10 hover:bg-rose-500/20 border border-rose-500/30 text-rose-400 px-4 py-2.5 rounded-xl text-xs font-bold uppercase tracking-wider transition shadow-sm shadow-rose-950/20">
+                    🚪 Keluar
                 </a>
             </div>
         </header>
+
+        <?php if (session()->getFlashdata('success')): ?>
+            <div class="bg-emerald-500/10 border border-emerald-500/20 text-emerald-400 text-sm p-4 rounded-xl mb-6 font-medium">
+                ✨ <?= session()->getFlashdata('success') ?>
+            </div>
+        <?php endif; ?>
+
+        <?php if (session()->getFlashdata('error')): ?>
+            <div class="bg-rose-500/10 border border-rose-500/20 text-rose-400 text-sm p-4 rounded-xl mb-6 font-medium">
+                ⚠️ <?= session()->getFlashdata('error') ?>
+            </div>
+        <?php endif; ?>
 
         <div class="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start mb-10">
 
@@ -194,7 +209,6 @@
     </div>
 
     <script>
-        // Set patokan awal peta radar di koordinat UMPR Palangka Raya
         const initialLat = -2.22623400;
         const initialLng = 113.92423100;
 
@@ -206,7 +220,6 @@
 
         let currentMarker = null;
 
-        // Event Listener Klik Kiri Peta untuk Mengunci Nilai Koordinat
         map.on('click', function(e) {
             const lat = e.latlng.lat;
             const lng = e.latlng.lng;
@@ -218,11 +231,9 @@
                 currentMarker.bindPopup('<b class="text-slate-900 text-xs">Lokasi Target Kost</b>').openPopup();
             }
 
-            // Injeksi nilai ke input hidden form
             document.getElementById('latitude').value = lat.toFixed(8);
             document.getElementById('longitude').value = lng.toFixed(8);
 
-            // Tampilkan visual feedback di kotak monitor koordinat
             document.getElementById('display-lat').innerText = lat.toFixed(8);
             document.getElementById('display-lng').innerText = lng.toFixed(8);
 
