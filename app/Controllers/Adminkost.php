@@ -45,7 +45,7 @@ class Adminkost extends BaseController
         ];
 
         if (!$this->validate($rules)) {
-            return redirect()->back()->withInput()->with('error', 'Format input data tidak valid, Kapten.');
+            return redirect()->back()->withInput()->with('error', 'Format input data tidak valid.');
         }
 
         $userId    = (int)session()->get('user_id'); // Ambil ID si pemilik dari sesi secure
@@ -89,7 +89,7 @@ class Adminkost extends BaseController
             return redirect()->back()->withInput()->with('error', 'Terjadi kesalahan internal saat memetakan properti.');
         }
 
-        return redirect()->to(base_url('/owner/dashboard'))->with('success', 'Hanjay, properti kost antum berhasil terdaftar secara eksklusif!');
+        return redirect()->to(base_url('/owner/dashboard'))->with('success', 'Kost anda sudah didaftarkan');
     }
 
     /**
@@ -111,7 +111,7 @@ class Adminkost extends BaseController
             ]);
         } else {
             // Jika terdeteksi mencoba menembak ID kost orang lain, lempar error tanpa eksekusi
-            return redirect()->to(base_url('/owner/dashboard'))->with('error', 'Akses ilegal! Properti tersebut bukan milik antum.');
+            return redirect()->to(base_url('/owner/dashboard'))->with('error', 'Akses ditolak.');
         }
 
         return redirect()->to(base_url('/owner/dashboard'));

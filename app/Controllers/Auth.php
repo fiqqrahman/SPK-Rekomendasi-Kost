@@ -47,7 +47,7 @@ class Auth extends BaseController
         }
 
         // Jika gagal, kembalikan dengan pesan peringatan tajam
-        return redirect()->back()->with('error', 'Kombinasi Email atau Password salah, Kapten!');
+        return redirect()->back()->with('error', 'Kombinasi Email atau Password tidak sesuai!');
     }
 
     // 3. Proses Log Out (Penghancuran Sesi)
