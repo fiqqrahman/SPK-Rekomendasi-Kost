@@ -1,0 +1,108 @@
+# =========================================================================
+# 1. KREDENSIAL LOKAL & PROTEKSI KEAMANAN PROYEK SPK KOST
+# =========================================================================
+# Kredensial utama
+.env
+.env.local
+.env.bak
+.vagrant
+Vagrantfile
+
+# Mengunci salinan berkas env dengan spasi pada proyek antum
+"env copy"
+
+# Mengamankan dump database lokal dari bot crawler GitHub
+*.sql
+kost_db_sql
+
+# =========================================================================
+# 2. DATA RUNTIME & LOGS (WRITABLE AREA)
+# =========================================================================
+/writable/cache/*
+!/writable/cache/index.html
+
+/writable/logs/*
+!/writable/logs/index.html
+
+/writable/session/*
+!/writable/session/index.html
+
+/writable/uploads/*
+!/writable/uploads/index.html
+
+/writable/debugbar/*
+!/writable/debugbar/index.html
+
+php_errors.log
+
+# =========================================================================
+# 3. COMPOSER DEPENDENCIES (THIRD PARTY LIBRARIES)
+# =========================================================================
+vendor/
+
+# =========================================================================
+# 4. SAMPAH SPESIFIK SISTEM OPERASI (OS JUNK FILES)
+# =========================================================================
+# OS X
+.DS_Store
+.AppleDouble
+.LSOverride
+._*
+
+# Windows
+Thumbs.db
+ehthumbs.db
+Desktop.ini
+$RECYCLE.BIN/
+*.cab
+*.msi
+*.msm
+*.msp
+*.lnk
+
+# Linux / KDE
+*~
+.directory
+.Trash-*
+
+# =========================================================================
+# 5. CONFIG TEXT EDITOR & IDE (DEVELOPMENT ENVIRONMENT)
+# =========================================================================
+# Jetbrains (PHPStorm, etc)
+.idea/
+*.iml
+
+# Visual Studio Code
+.vscode/
+
+# NetBeans
+/nbproject/
+/build/
+/nbbuild/
+/dist/
+/nbdist/
+/nbactions.xml
+/nb-configuration.xml
+/.nb-gradle/
+
+# Sublime Text
+*.tmlanguage.cache
+*.tmPreferences.cache
+*.stTheme.cache
+*.sublime-workspace
+*.sublime-project
+.phpintel
+/api/
+
+# =========================================================================
+# 6. PENGUJIAN & PANDUAN PENGGUNA (TESTING & DOCS RUNTIME)
+# =========================================================================
+/user_guide_src/build/*
+/user_guide_src/cilexer/build/*
+/user_guide_src/cilexer/dist/*
+/user_guide_src/cilexer/pycilexer.egg-info/*
+
+/tests/coverage*
+/phpunit
+/results/
+/phpunit.xml
