@@ -116,4 +116,38 @@ class Adminkost extends BaseController
 
         return redirect()->to(base_url('/owner/dashboard'));
     }
+
+    /**
+     * Penghapusan Data Properti Kost Secara Permanen (Secure Deletion Engine)
+     */
+    public function delete(int $id): \CodeIgniter\HTTP\RedirectResponse
+    {
+        // 1. Tangkap kartu pengenal pemilik dari sesi secure RAM
+        $userId = (int)session()->get('user_id');
+
+        // 2. BENTENG BARIER ANTI-IDOR: Validasi kepemilikan aset secara ketat
+        $kost = $this->kostModel->where('id', $id)->where('user_id', $userId)->first();
+
+        if (!$kost) {
+            return redirect()->to(base_url('/owner/dashboard'))->with('error', 'Akses ilegal! Properti tidak ditemukan atau bukan milik antum, Kapten.');
+        }
+
+        // 3. Eksekusi ACID Transaction untuk membersihkan relasi tabel
+        $this->db->transStart();
+
+        // Bersihkan data jembatan di 'kost_features' terlebih dahulu agar tidak memicu foreign key conflict
+        $this->db->table('kost_features')->where('kost_id', $id)->delete();
+
+        // Hapus entitas induk data kost
+        $this->kostModel->delete($id);
+
+        $this->db->transComplete();
+
+        // 4. Evaluasi status akhir transaksi database
+        if ($this->db->transStatus() === false) {
+            return redirect()->back()->with('error', 'Gagal memproses penghapusan data pada storage engine.');
+        }
+
+        return redirect()->to(base_url('/owner/dashboard'))->with('success', 'Hanjay, properti kost antum telah dimusnahkan secara sah dari sistem!');
+    }
 }

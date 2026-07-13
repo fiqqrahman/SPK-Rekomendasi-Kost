@@ -23,4 +23,7 @@ $routes->group('owner', ['filter' => 'auth_satpam'], static function (RouteColle
 
     // Jalur eksekusi saklar kamar (Flipping Bit) -> localhost/owner/toggle-status/1
     $routes->get('toggle-status/(:num)', 'Adminkost::toggleStatus/$1');
+
+    // JALUR BARU: Eksekusi penghancuran properti kost secara aman
+    $routes->get('delete/(:num)', 'Adminkost::delete/$1');
 });

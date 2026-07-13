@@ -205,6 +205,12 @@
                                             class="inline-block text-xs font-bold px-4 py-2 rounded-xl transition cursor-pointer font-sans shadow-md text-center w-36 uppercase tracking-wider text-[11px] <?= (isset($kost['is_full']) && $kost['is_full'] == 1) ? 'bg-gradient-to-r from-teal-500 to-emerald-500 text-slate-950 hover:from-teal-600 hover:to-emerald-600 shadow-teal-500/5' : 'bg-gradient-to-r from-rose-500 to-red-600 text-white hover:from-rose-600 hover:to-red-700 shadow-rose-500/5' ?>">
                                             <?= (isset($kost['is_full']) && $kost['is_full'] == 1) ? 'Buka Kamar' : 'Set Jadi Penuh' ?>
                                         </a>
+
+                                        <a href="<?= base_url('/owner/delete/' . $kost['id']) ?>"
+                                            onclick="return confirm('Tindakan ini akan menghapus properti kost secara permanen. Apakah Anda yakin ingin melanjutkan?');"
+                                            class="inline-block text-xs font-bold px-3 py-2 rounded-xl bg-gradient-to-r from-rose-500 to-red-600 text-white hover:from-rose-600 hover:to-red-700 transition cursor-pointer font-sans shadow-md text-center uppercase tracking-wider text-[10px] shadow-rose-500/5">
+                                            Hapus
+                                        </a>
                                     </td>
                                 </tr>
                             <?php endforeach; ?>
