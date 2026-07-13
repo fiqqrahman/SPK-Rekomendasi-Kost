@@ -48,9 +48,6 @@ $campuses = $campuses ?? []; // Ensure $campuses is always an array to prevent "
             <h1 class="text-4xl font-extrabold text-white tracking-tight sm:text-5xl">
                 Sistem Pendukung Keputusan <span class="text-teal-400">Rekomendasi Kost</span>
             </h1>
-            <!-- <p class="text-slate-400 mt-3 text-base max-w-2xl mx-auto font-light">
-                Komputasi matriks keputusan keputusan objektif terintegrasi GIS dengan visualisasi fasilitas fisik waktu-nyata.
-            </p> -->
         </header>
 
         <div class="bg-[#1e293b] p-6 rounded-2xl shadow-xl border border-slate-700/60 mb-8">
@@ -84,7 +81,7 @@ $campuses = $campuses ?? []; // Ensure $campuses is always an array to prevent "
 
         <div class="bg-[#1e293b] border border-slate-700/60 p-4 rounded-2xl shadow-xl mb-8">
             <h2 class="text-sm font-bold uppercase tracking-widest text-slate-300 mb-4 flex items-center gap-2">
-                pemetaan
+                pemetaan geospasial
             </h2>
             <div id="map" class="h-96 rounded-xl border border-slate-900 shadow-inner z-10"></div>
         </div>
@@ -120,7 +117,20 @@ $campuses = $campuses ?? []; // Ensure $campuses is always an array to prevent "
                                     </td>
 
                                     <td class="px-6 py-5">
-                                        <div class="font-semibold text-white text-base group-hover:text-teal-400 transition"><?= esc($row['name']) ?></div>
+                                        <div class="flex items-center gap-2.5">
+                                            <div class="font-semibold text-white text-base group-hover:text-teal-400 transition">
+                                                <?= esc($row['name']) ?>
+                                            </div>
+                                            <?php if (isset($row['is_full']) && $row['is_full'] == 1): ?>
+                                                <span class="bg-rose-500/10 text-rose-400 border border-rose-500/20 px-2 py-0.5 rounded-md text-[9px] font-extrabold uppercase tracking-wider">
+                                                    🚨 Penuh
+                                                </span>
+                                            <?php else: ?>
+                                                <span class="bg-emerald-500/10 text-emerald-400 border border-emerald-500/20 px-2 py-0.5 rounded-md text-[9px] font-extrabold uppercase tracking-wider">
+                                                    ✓ Tersedia
+                                                </span>
+                                            <?php endif; ?>
+                                        </div>
 
                                         <div class="flex flex-wrap gap-1.5 mt-2">
                                             <?php if (!empty($row['features'])): ?>
@@ -191,7 +201,7 @@ $campuses = $campuses ?? []; // Ensure $campuses is always an array to prevent "
             }).addTo(map);
             campusMarker.bindPopup(`<div class="text-slate-900 font-sans p-1"><b class="text-sm block uppercase text-rose-600">${campusInfo.name}</b><span class="text-slate-500 text-xs">Titik Pusat Ukur Radius</span></div>`).openPopup();
 
-            // Pemetaan Seluruh Titik Lokasi Alternatif Kost (Menggunakan Ikon Rumah Kustom)
+            // Pemetaan Seluruh Titik Lokasi Alternatif Kost
             if (kostLocations.length > 0) {
                 kostLocations.forEach(function(kost, index) {
                     if (kost.latitude && kost.longitude) {
@@ -215,6 +225,11 @@ $campuses = $campuses ?? []; // Ensure $campuses is always an array to prevent "
                             icon: kostCustomIcon
                         }).addTo(map);
 
+                        // MODIFIKASI TERITORIAL MAP POPUP: Suntikan Kondisional String Status Siber
+                        let statusMarkerBadge = (kost.is_full == 1) ?
+                            `<span style="background:#ffe4e6; color:#e11d48; font-weight:bold; padding:2px 7px; border-radius:8px; font-size:10px; display:inline-block; border:1px solid #fda4af;">🚨 Penuh</span>` :
+                            `<span style="background:#d1fae5; color:#059669; font-weight:bold; padding:2px 7px; border-radius:8px; font-size:10px; display:inline-block; border:1px solid #6ee7b7;">✓ Tersedia</span>`;
+
                         let facilityList = '';
                         if (kost.features.length > 0) {
                             kost.features.forEach(f => {
@@ -227,6 +242,7 @@ $campuses = $campuses ?? []; // Ensure $campuses is always an array to prevent "
                         const popupContent = `
                             <div class="text-slate-900 font-sans text-xs" style="min-width:180px;">
                                 <b class="text-sm block text-teal-600 border-b pb-1 mb-1" style="font-size:13px;">${kost.name}</b>
+                                <div style="margin-bottom:6px;"><b>Status Kamar</b>: ${statusMarkerBadge}</div>
                                 <div style="margin-bottom:6px;"><b>Peringkat Ke-</b>: <span style="background:#ccfbf1; color:#0d9488; font-weight:bold; padding:1px 6px; border-radius:10px;">#${index + 1}</span></div>
                                 <b>Jarak Radius</b>: <span class="text-amber-600 font-mono font-bold">${kost.distance} Km</span><br>
                                 <b>Skor SPK Akhir</b>: <span class="text-teal-600 font-mono font-bold">${kost.final_score}</span>
