@@ -15,7 +15,7 @@ $campuses = $campuses ?? []; // Ensure $campuses is always an array to prevent "
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>SPK Pencarian Kost Palangka Raya</title>
+    <title>SPK Kost Palangka Raya</title>
 
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
