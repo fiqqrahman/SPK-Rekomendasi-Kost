@@ -148,7 +148,7 @@
                         Penentu Koordinat Geospasial
                     </h2>
                     <p class="text-xs text-slate-400 mt-1 font-light">
-                        Cari lokasi properti antum di peta bawah ini, lalu **Klik Kiri** tepat di atas atap bangunannya untuk mengunci posisi koordinat.
+                        Cari lokasi properti di peta bawah ini, lalu **Klik Kiri** tepat di atas atap bangunannya untuk mengunci posisi koordinat.
                     </p>
                 </div>
 
