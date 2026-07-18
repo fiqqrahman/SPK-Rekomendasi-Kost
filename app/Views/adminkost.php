@@ -41,7 +41,7 @@
                     Control Panel <span class="text-teal-400">Pemilik Kost</span>
                 </h1>
                 <p class="text-slate-400 mt-1 text-sm font-light">
-                    Registrasikan properti baru dan kelola ketersediaan status hunian kamar antum dalam satu layar terintegrasi.
+                    Registrasikan properti baru dan kelola ketersediaan status hunian kamar dalam satu layar terintegrasi.
                 </p>
             </div>
 
