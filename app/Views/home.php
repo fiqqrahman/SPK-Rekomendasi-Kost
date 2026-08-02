@@ -171,16 +171,29 @@ $selectedLifestyle = $selectedLifestyle ?? $lifestyle ?? 'default';
                         }).addTo(map);
 
                         // MODUL GALERI FOTO: Menyusun Grid Mini Foto Validasi di Dalam Popup Spasial
+                        // MODUL GALERI FOTO: Pemrosesan Grid Mini Foto Properti Secara Aman
                         let popupGalleryHtml = '';
-                        if (kost.images && kost.images.length > 0) {
-                            // Layout Grid 2 Kolom untuk menampilkan koleksi banyak gambar secara proporsional
-                            popupGalleryHtml = '<div style="display:grid; grid-template-columns:repeat(2, 1fr); gap:4px; margin-bottom:8px; max-height:130px; overflow-y:auto;">';
-                            kost.images.forEach(img => {
-                                popupGalleryHtml += `<img src="${'<?= base_url('uploads/kosts/') ?>' + img}" style="width:100%; height:60px; object-fit:cover; border-radius:6px; border:1px solid #e2e8f0;" alt="${kost.name}">`;
+
+                        // Ambil data gambar, pastikan tipenya dikonversi dengan aman jika masih berupa string JSON
+                        let photoList = [];
+                        if (kost.images) {
+                            photoList = Array.isArray(kost.images) ? kost.images : JSON.parse(kost.images);
+                        }
+
+                        if (photoList && photoList.length > 0) {
+                            // Membuka container grid 2 kolom untuk menampung banyak berkas gambar sekaligus
+                            popupGalleryHtml = '<div style="display:grid; grid-template-columns:repeat(2, 1fr); gap:6px; margin-bottom:8px; max-height:140px; overflow-y:auto; padding:2px;">';
+
+                            photoList.forEach(function(img) {
+                                if (img) {
+                                    popupGalleryHtml += `<img src="${'<?= base_url('uploads/kosts/') ?>' + img}" style="width:100%; height:65px; object-fit:cover; border-radius:6px; border:1px solid #cbd5e1;" alt="${kost.name}">`;
+                                }
                             });
+
                             popupGalleryHtml += '</div>';
                         } else {
-                            popupGalleryHtml = `<div style="width:100%; height:40px; background:#f1f5f9; border-radius:8px; margin-bottom:8px; display:flex; align-items:center; justify-content:center; color:#94a3b8; font-size:10px; font-style:italic; border:1px solid #e2e8f0; line-height:40px; text-align:center;">Foto belum divalidasi</div>`;
+                            // Fallback Layout apabila array foto kosong
+                            popupGalleryHtml = `<div style="width:100%; height:45px; background:#f1f5f9; border-radius:8px; margin-bottom:8px; display:flex; align-items:center; justify-content:center; color:#94a3b8; font-size:10px; font-style:italic; border:1px solid #e2e8f0; line-height:45px; text-align:center;">Foto belum divalidasi</div>`;
                         }
 
                         let statusMarkerBadge = (kost.is_full == 1) ?

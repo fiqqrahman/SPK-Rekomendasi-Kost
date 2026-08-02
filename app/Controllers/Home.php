@@ -151,7 +151,7 @@ class Home extends BaseController
                 'longitude'   => $alt['longitude'],
                 'features'    => $featuresList, // Menggunakan hasil mapping database yang sudah valid
                 'is_full'     => (int)($alt['is_full'] ?? 0),
-                'image'       => $alt['image']
+                'images'      => json_decode($alt['image'] ?? '[]', true)
             ];
         }
 
