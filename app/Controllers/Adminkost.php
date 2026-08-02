@@ -33,7 +33,7 @@ class Adminkost extends BaseController
     }
 
     /**
-     * 2. Menyimpan Properti Baru Terikat Otomatis ke Akun Pemilik
+     * PENGEMBANGAN: Mampu Menampung Banyak Gambar Sekaligus (Multi-Upload Engine)
      */
     public function save(): \CodeIgniter\HTTP\RedirectResponse
     {
@@ -48,27 +48,45 @@ class Adminkost extends BaseController
             return redirect()->back()->withInput()->with('error', 'Format input data tidak valid.');
         }
 
-        $userId    = (int)session()->get('user_id'); // Ambil ID si pemilik dari sesi secure
+        $userId    = (int)session()->get('user_id');
         $name      = $this->request->getPost('name');
         $price     = $this->request->getPost('price');
         $latitude  = $this->request->getPost('latitude');
         $longitude = $this->request->getPost('longitude');
         $features  = $this->request->getPost('features') ?? [];
 
+        // Pemrosesan Array Berkas Gambar Ganda secara Kolektif
+        $uploadedImages = [];
+        $imageFiles = $this->request->getFileMultiple('images'); // Menangkap array file
+
+        if ($imageFiles) {
+            foreach ($imageFiles as $file) {
+                if ($file->isValid() && !$file->hasMoved()) {
+                    // Validasi internal tipe ekstensi secara manual demi menjaga performa
+                    $mime = $file->getClientMimeType();
+                    if (in_array($mime, ['image/jpg', 'image/jpeg', 'image/png', 'image/webp'])) {
+                        $encryptedName = $file->getRandomName();
+                        $file->move(ROOTPATH . 'public/uploads/kosts/', $encryptedName);
+                        $uploadedImages[] = $encryptedName;
+                    }
+                }
+            }
+        }
+
         $this->db->transStart();
 
-        // Menyuntikkan user_id ke dalam matriks array insert
         $kostData = [
-            'user_id'   => $userId, // Kunci kepemilikan aset!
+            'user_id'   => $userId,
             'name'      => $name,
             'price'     => (float)$price,
             'latitude'  => (float)$latitude,
             'longitude' => (float)$longitude,
             'is_active' => 1,
-            'is_full'   => 0
+            'is_full'   => 0,
+            'image'     => !empty($uploadedImages) ? json_encode($uploadedImages) : null // Disimpan sebagai JSON string
         ];
-        $this->kostModel->insert($kostData);
 
+        $this->kostModel->insert($kostData);
         $kostId = $this->kostModel->getInsertID();
 
         if (!empty($features) && is_array($features)) {
@@ -86,12 +104,11 @@ class Adminkost extends BaseController
         $this->db->transComplete();
 
         if ($this->db->transStatus() === false) {
-            return redirect()->back()->withInput()->with('error', 'Terjadi kesalahan internal saat memetakan properti.');
+            return redirect()->back()->withInput()->with('error', 'Terjadi kesalahan internal.');
         }
 
-        return redirect()->to(base_url('/owner/dashboard'))->with('success', 'Kost anda sudah didaftarkan');
+        return redirect()->to(base_url('/owner/dashboard'))->with('success', 'Kost antum berhasil didaftarkan.');
     }
-
     /**
      * 3. Saklar Kilat Status Kamar (Diproteksi dari Celah Pembajakan IDOR)
      */
@@ -118,36 +135,41 @@ class Adminkost extends BaseController
     }
 
     /**
-     * Penghapusan Data Properti Kost Secara Permanen (Secure Deletion Engine)
+     * REFAKTORISASI: Secure Physical Deletion Engine (Anti-Orphaned Files)
      */
     public function delete(int $id): \CodeIgniter\HTTP\RedirectResponse
     {
-        // 1. Tangkap kartu pengenal pemilik dari sesi secure RAM
         $userId = (int)session()->get('user_id');
 
-        // 2. BENTENG BARIER ANTI-IDOR: Validasi kepemilikan aset secara ketat
+        // Proteksi IDOR Barrier
         $kost = $this->kostModel->where('id', $id)->where('user_id', $userId)->first();
 
         if (!$kost) {
-            return redirect()->to(base_url('/owner/dashboard'))->with('error', 'Akses ilegal! Properti tidak ditemukan atau bukan milik antum, Kapten.');
+            return redirect()->to(base_url('/owner/dashboard'))->with('error', 'Akses ilegal! Properti tidak ditemukan.');
         }
 
-        // 3. Eksekusi ACID Transaction untuk membersihkan relasi tabel
+        // BENTENG PEMBERSIH FISIK: Lacak dan musnahkan semua file foto di dalam disk[cite: 6]
+        if (!empty($kost['image'])) {
+            $imagesArray = json_decode($kost['image'], true);
+            if (is_array($imagesArray)) {
+                foreach ($imagesArray as $fileName) {
+                    $physicalPath = ROOTPATH . 'public/uploads/kosts/' . $fileName;
+                    if (file_exists($physicalPath)) {
+                        unlink($physicalPath); // Menghapus file nyata dari penyimpanan lokal komputer[cite: 6]
+                    }
+                }
+            }
+        }
+
         $this->db->transStart();
-
-        // Bersihkan data jembatan di 'kost_features' terlebih dahulu agar tidak memicu foreign key conflict
-        $this->db->table('kost_features')->where('kost_id', $id)->delete();
-
-        // Hapus entitas induk data kost
-        $this->kostModel->delete($id);
-
+        $this->db->table('kost_features')->where('kost_id', $id)->delete(); //[cite: 6]
+        $this->kostModel->delete($id); //[cite: 6]
         $this->db->transComplete();
 
-        // 4. Evaluasi status akhir transaksi database
         if ($this->db->transStatus() === false) {
-            return redirect()->back()->with('error', 'Gagal memproses penghapusan data pada storage engine.');
+            return redirect()->back()->with('error', 'Gagal memproses penghapusan data.');
         }
 
-        return redirect()->to(base_url('/owner/dashboard'))->with('success', 'Hanjay, properti kost antum telah dimusnahkan secara sah dari sistem!');
+        return redirect()->to(base_url('/owner/dashboard'))->with('success', 'Aset properti beserta seluruh berkas foto fisiknya telah dimusnahkan!');
     }
 }

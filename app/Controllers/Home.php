@@ -150,7 +150,8 @@ class Home extends BaseController
                 'latitude'    => $alt['latitude'],
                 'longitude'   => $alt['longitude'],
                 'features'    => $featuresList, // Menggunakan hasil mapping database yang sudah valid
-                'is_full'     => (int)($alt['is_full'] ?? 0)
+                'is_full'     => (int)($alt['is_full'] ?? 0),
+                'image'       => $alt['image']
             ];
         }
 

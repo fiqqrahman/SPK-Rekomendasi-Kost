@@ -88,7 +88,7 @@
                     Form Tambah Properti Baru
                 </h2>
 
-                <form method="POST" action="<?= base_url('/owner/save') ?>" class="space-y-5">
+                <form method="POST" action="<?= base_url('/owner/save') ?>" enctype="multipart/form-data" class="space-y-5">
 
                     <div>
                         <label for="name" class="block text-xs font-bold uppercase tracking-wider text-slate-400 mb-2">Nama Properti Kost</label>
@@ -129,6 +129,11 @@
                                 <input type="checkbox" name="features[]" value="5" class="w-4 h-4 rounded text-teal-500 bg-[#0f172a] border-slate-600 focus:ring-teal-400 focus:ring-offset-0 accent-teal-400">
                                 <span>Satpam / Penjaga Kost</span>
                             </label>
+                            <!-- Tambahkan Group Input ini di dalam Form Pengisian Properti Baru -->
+                            <div class="mb-4">
+                                <label for="image" class="block text-xs font-bold uppercase tracking-wider text-slate-400 mb-2">Foto Validasi Kost</label>
+                                <input type="file" name="image" id="image" accept="image/*" class="w-full bg-[#0f172a] border border-slate-600 rounded-xl px-4 py-2.5 text-white text-sm focus:outline-none focus:border-teal-400 transition" required>
+                            </div>
                         </div>
                     </div>
 
