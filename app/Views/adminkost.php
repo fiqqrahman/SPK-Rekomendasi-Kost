@@ -130,9 +130,10 @@
                                 <span>Satpam / Penjaga Kost</span>
                             </label>
                             <!-- Tambahkan Group Input ini di dalam Form Pengisian Properti Baru -->
+                            <!-- 2. UBAH INPUT FOTO MENJADI SEPERTI INI -->
                             <div class="mb-4">
-                                <label for="image" class="block text-xs font-bold uppercase tracking-wider text-slate-400 mb-2">Foto Validasi Kost</label>
-                                <input type="file" name="image" id="image" accept="image/*" class="w-full bg-[#0f172a] border border-slate-600 rounded-xl px-4 py-2.5 text-white text-sm focus:outline-none focus:border-teal-400 transition" required>
+                                <label for="images" class="block text-xs font-bold uppercase tracking-wider text-slate-400 mb-2">Foto-Foto Validasi Kost (Bisa Pilih Banyak)</label>
+                                <input type="file" name="images[]" id="images" accept="image/*" class="w-full bg-[#0f172a] border border-slate-600 rounded-xl px-4 py-2.5 text-white text-sm focus:outline-none focus:border-teal-400 transition" multiple required>
                             </div>
                         </div>
                     </div>
