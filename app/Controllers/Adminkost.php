@@ -171,6 +171,6 @@ class Adminkost extends BaseController
             return redirect()->back()->with('error', 'Gagal memproses penghapusan data.');
         }
 
-        return redirect()->to(base_url('/owner/dashboard'))->with('success', 'Aset properti beserta seluruh berkas foto fisiknya telah dimusnahkan!');
+        return redirect()->to(base_url('/owner/dashboard'))->with('success', 'Aset kost berhasil dihapus.');
     }
 }
