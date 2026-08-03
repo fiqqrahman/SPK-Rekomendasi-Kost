@@ -42,7 +42,7 @@ class Home extends BaseController
             $weights[$crit['code']] = (float)$crit['weight'];
         }
 
-        // Taktik Siber Overriding Bobot Berdasarkan Preferensi User
+        // Penyesuaian bobot berdasarkan gaya hidup yang dipilih
         if ($lifestyle === 'mendang_mending') {
             $weights['C1'] = 0.50;
             $weights['C2'] = 0.40;
@@ -78,7 +78,7 @@ class Home extends BaseController
         }
         unset($alt);
 
-        // Pencarian Nilai Ekstrem Maksimum dan Minimum untuk Keperluan Normalisasi
+        // Tahap Normalisasi dan Perhitungan Skor Akhir
         $minMax = [];
         foreach ($criterias as $crit) {
             $cId = (int)$crit['id'];
@@ -102,7 +102,7 @@ class Home extends BaseController
             }
         }
 
-        // Pemrosesan Inti Algoritma Multi-Criteria Decision Making (SAW Engine)
+        // Tahap Perhitungan Skor Akhir dan Penyusunan Data untuk Tampilan
         $finalRankings = [];
         foreach ($alternatives as $alt) {
             $totalScore = 0.0;
@@ -128,7 +128,7 @@ class Home extends BaseController
                 $totalScore += $normalized * $weight;
             }
 
-            // AMANKAN RELASI FITUR: Mengambil data nama fitur terhubung dari database agar tidak memicu Undefined Array Key
+            // Ambil data fitur dari database untuk setiap kost yang sedang diproses
             $dbFeatures = $this->db->table('kost_features')
                 ->join('features', 'features.id = kost_features.feature_id')
                 ->where('kost_features.kost_id', $alt['id'])
@@ -141,7 +141,7 @@ class Home extends BaseController
                 $featuresList[] = $f['name'];
             }
 
-            // REFAKTORISASI MATRIKS: Menyusun ulang array dengan data fitur dan status kamar penuh yang valid
+            // Susun data akhir untuk setiap kost yang akan ditampilkan di halaman utama
             $finalRankings[] = [
                 'name'        => $alt['name'],
                 'price'       => $alt['price'],
@@ -149,7 +149,7 @@ class Home extends BaseController
                 'final_score' => round($totalScore, 4),
                 'latitude'    => $alt['latitude'],
                 'longitude'   => $alt['longitude'],
-                'features'    => $featuresList, // Menggunakan hasil mapping database yang sudah valid
+                'features'    => $featuresList,
                 'is_full'     => (int)($alt['is_full'] ?? 0),
                 'images'      => json_decode($alt['image'] ?? '[]', true)
             ];
@@ -168,7 +168,7 @@ class Home extends BaseController
     }
 
     /**
-     * Perhitungan Jarak Permukaan Bumi (Haversine Engine)
+     * Perhitungan Jarak Permukaan Bumi
      */
     private function calculateHaversine(float $lat1, float $lon1, float $lat2, float $lon2): float
     {

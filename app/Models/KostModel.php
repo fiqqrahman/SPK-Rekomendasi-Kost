@@ -10,7 +10,7 @@ class KostModel extends Model
     protected $primaryKey       = 'id';
     protected $returnType       = 'array';
 
-    // BENTENG WHITELIST: Menambahkan 'image' agar sah dimanipulasi oleh Controller
+    // protected $allowedFields berfungsi untuk menentukan kolom-kolom data yang dapat di manipulasi melalui model.
     protected $allowedFields    = ['user_id', 'name', 'price', 'latitude', 'longitude', 'is_active', 'is_full', 'image'];
 
     public function getKostsWithFeatures(): array

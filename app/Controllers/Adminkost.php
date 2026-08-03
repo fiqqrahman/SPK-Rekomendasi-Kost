@@ -15,16 +15,18 @@ class Adminkost extends BaseController
         $this->kostModel = new KostModel();
     }
 
-    /**
-     * 1. Halaman Dashboard Terpadu (Sudah Terfilter Spesifik Per User)
-     */
+
+    // Halaman Dashboard (Sudah Terfilter Spesifik Per User)
     public function index(): string
     {
         // Tangkap ID pemilik yang sedang aktif dari sesi login
         $userId = (int)session()->get('user_id');
 
-        // PENGUNCI DATA: Hanya menarik kost yang memiliki user_id cocok dengan si pemilik!
-        // Jika ini user baru yang belum punya kost, otomatis tabel bawah akan kosong bersih.
+        /**
+         * Kendali data - hanya menarik kost yang memiliki user_id cocok dengan si pemilik!
+         * Jika user baru yang belum punya kost, otomatis tabel bawah akan kosong, user diharuskan menginputkan data kost miliknya sendiri terlebih dahulu.
+         */
+
         $myKosts = $this->kostModel->where('user_id', $userId)->findAll();
 
         return view('adminkost', [
@@ -32,9 +34,7 @@ class Adminkost extends BaseController
         ]);
     }
 
-    /**
-     * PENGEMBANGAN: Mampu Menampung Banyak Gambar Sekaligus (Multi-Upload Engine)
-     */
+    // Fungsi untuk menyimpan data kost baru ke database
     public function save(): \CodeIgniter\HTTP\RedirectResponse
     {
         $rules = [
@@ -62,7 +62,7 @@ class Adminkost extends BaseController
         if ($imageFiles) {
             foreach ($imageFiles as $file) {
                 if ($file->isValid() && !$file->hasMoved()) {
-                    // Validasi internal tipe ekstensi secara manual demi menjaga performa
+                    // Validasi tipe ekstensi secara manual demi menjaga performa
                     $mime = $file->getClientMimeType();
                     if (in_array($mime, ['image/jpg', 'image/jpeg', 'image/png', 'image/webp'])) {
                         $encryptedName = $file->getRandomName();
@@ -109,15 +109,16 @@ class Adminkost extends BaseController
 
         return redirect()->to(base_url('/owner/dashboard'))->with('success', 'Kost antum berhasil didaftarkan.');
     }
-    /**
-     * 3. Saklar Kilat Status Kamar (Diproteksi dari Celah Pembajakan IDOR)
-     */
+    // Toggle status kost (is_full) dengan proteksi IDOR
     public function toggleStatus(int $id): \CodeIgniter\HTTP\RedirectResponse
     {
         $userId = (int)session()->get('user_id');
 
-        // BENTENG PERTAHANAN: Cari kost yang ID-nya cocok DAN user_id-nya adalah milik si login user!
-        // Ini memotong celah hacker merubah status kost orang lain via manipulasi angka di URL.
+        /**
+         * Keamanan Data: hanya menampilkan kost yang ID-nya cocok DAN user_id-nya adalah milik si login user
+         * untuk mencegak adanya aktivitas merubah status kost orang lain via manipulasi angka di URL.
+         */
+
         $kost = $this->kostModel->where('id', $id)->where('user_id', $userId)->first();
 
         if ($kost) {
@@ -135,7 +136,7 @@ class Adminkost extends BaseController
     }
 
     /**
-     * REFAKTORISASI: Secure Physical Deletion Engine (Anti-Orphaned Files)
+     * Fungsi untuk menghapus kost beserta seluruh berkas foto fisiknya dari penyimpanan
      */
     public function delete(int $id): \CodeIgniter\HTTP\RedirectResponse
     {
@@ -148,22 +149,22 @@ class Adminkost extends BaseController
             return redirect()->to(base_url('/owner/dashboard'))->with('error', 'Akses ilegal! Properti tidak ditemukan.');
         }
 
-        // BENTENG PEMBERSIH FISIK: Lacak dan musnahkan semua file foto di dalam disk[cite: 6]
+        // Cari file gambar terkait kost yang akan dihapus, lalu hapus file fisiknya dari penyimpanan
         if (!empty($kost['image'])) {
             $imagesArray = json_decode($kost['image'], true);
             if (is_array($imagesArray)) {
                 foreach ($imagesArray as $fileName) {
                     $physicalPath = ROOTPATH . 'public/uploads/kosts/' . $fileName;
                     if (file_exists($physicalPath)) {
-                        unlink($physicalPath); // Menghapus file nyata dari penyimpanan lokal komputer[cite: 6]
+                        unlink($physicalPath); // Menghapus file dari penyimpanan
                     }
                 }
             }
         }
 
         $this->db->transStart();
-        $this->db->table('kost_features')->where('kost_id', $id)->delete(); //[cite: 6]
-        $this->kostModel->delete($id); //[cite: 6]
+        $this->db->table('kost_features')->where('kost_id', $id)->delete();
+        $this->kostModel->delete($id);
         $this->db->transComplete();
 
         if ($this->db->transStatus() === false) {

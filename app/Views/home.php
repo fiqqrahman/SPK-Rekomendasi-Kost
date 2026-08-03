@@ -170,7 +170,6 @@ $selectedLifestyle = $selectedLifestyle ?? $lifestyle ?? 'default';
                             icon: kostCustomIcon
                         }).addTo(map);
 
-                        // MODUL GALERI FOTO: Menyusun Grid Mini Foto Validasi di Dalam Popup Spasial
                         // MODUL GALERI FOTO: Pemrosesan Grid Mini Foto Properti Secara Aman
                         let popupGalleryHtml = '';
 
