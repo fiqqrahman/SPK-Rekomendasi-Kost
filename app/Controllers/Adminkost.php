@@ -122,7 +122,7 @@ class Adminkost extends BaseController
      */
     public function delete(int $id): \CodeIgniter\HTTP\RedirectResponse
     {
-        // 1. Tangkap kartu pengenal pemilik dari sesi secure RAM
+        // 1. Tangkap kartu pengenal pemilik dari sesi secure 
         $userId = (int)session()->get('user_id');
 
         // 2. BENTENG BARIER ANTI-IDOR: Validasi kepemilikan aset secara ketat
