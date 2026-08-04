@@ -107,7 +107,7 @@ class Adminkost extends BaseController
             return redirect()->back()->withInput()->with('error', 'Terjadi kesalahan internal.');
         }
 
-        return redirect()->to(base_url('/owner/dashboard'))->with('success', 'Kost antum berhasil didaftarkan.');
+        return redirect()->to(base_url('/owner/dashboard'))->with('success', 'Kost berhasil didaftarkan.');
     }
     // Toggle status kost (is_full) dengan proteksi IDOR
     public function toggleStatus(int $id): \CodeIgniter\HTTP\RedirectResponse

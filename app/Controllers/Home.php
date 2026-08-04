@@ -106,19 +106,12 @@ class Home extends BaseController
         $finalRankings = [];
         foreach ($alternatives as $alt) {
             $totalScore = 0.0;
-
             foreach ($criterias as $crit) {
                 $cId = (int)$crit['id'];
                 $cCode = $crit['code'];
                 $weight = $weights[$cCode] ?? 0.0;
 
-                if ($cCode === 'C1') {
-                    $score = (float)$alt['price'];
-                } elseif ($cCode === 'C2') {
-                    $score = (float)$alt['distance'];
-                } else {
-                    $score = (float)($alt['feature_scores'][$cId] ?? 0.0);
-                }
+                $score = ($cCode === 'C1') ? (float)$alt['price'] : (($cCode === 'C2') ? (float)$alt['distance'] : (float)($alt['feature_scores'][$cId] ?? 0.0));
 
                 if (!isset($minMax[$cId]) || $minMax[$cId] == 0.0 || $score == 0.0) {
                     continue;
@@ -128,20 +121,7 @@ class Home extends BaseController
                 $totalScore += $normalized * $weight;
             }
 
-            // Ambil data fitur dari database untuk setiap kost yang sedang diproses
-            $dbFeatures = $this->db->table('kost_features')
-                ->join('features', 'features.id = kost_features.feature_id')
-                ->where('kost_features.kost_id', $alt['id'])
-                ->select('features.name')
-                ->get()
-                ->getResultArray();
-
-            $featuresList = [];
-            foreach ($dbFeatures as $f) {
-                $featuresList[] = $f['name'];
-            }
-
-            // Susun data akhir untuk setiap kost yang akan ditampilkan di halaman utama
+            // REFAC: Kueri database SQL di dalam loop dieliminasi total!
             $finalRankings[] = [
                 'name'        => $alt['name'],
                 'price'       => $alt['price'],
@@ -149,13 +129,13 @@ class Home extends BaseController
                 'final_score' => round($totalScore, 4),
                 'latitude'    => $alt['latitude'],
                 'longitude'   => $alt['longitude'],
-                'features'    => $featuresList,
+                'features'    => $alt['feature_names'], // Mengambil hasil pemetaan memori Eager Loading
                 'is_full'     => (int)($alt['is_full'] ?? 0),
                 'images'      => json_decode($alt['image'] ?? '[]', true)
             ];
         }
 
-        // Pengurutan Rangking secara Descending berdasarkan Skor Preferensi SAW Terbanyak
+        // Urutkan berdasarkan hasil perhitungan SAW tertinggi
         usort($finalRankings, fn(array $a, array $b): int => $b['final_score'] <=> $a['final_score']);
 
         return view('home', [
