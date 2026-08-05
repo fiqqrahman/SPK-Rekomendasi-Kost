@@ -74,12 +74,12 @@ class Filters extends BaseFilters
     public array $globals = [
         'before' => [
             'forcehttps',
-            'pagecache',
+            // 'pagecache',
             'csrf',          // AKTIFKAN: Proteksi serangan CSRF secara global pada metode POST/PUT/DELETE
             'invalidchars',  // AKTIFKAN: Pemblokiran otomatis karakter berbahaya pada input string
         ],
         'after' => [
-            'pagecache',
+            // 'pagecache',
             'performance',
             'toolbar',
             'secureheaders', // AKTIFKAN: Mengirimkan proteksi X-Content-Type, X-Frame-Options ke browser
