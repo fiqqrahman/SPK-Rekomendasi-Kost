@@ -52,13 +52,11 @@ class Filters extends BaseFilters
      */
     public array $required = [
         'before' => [
-            'forcehttps', // Force Global Secure Requests
-            'pagecache',  // Web Page Caching
+            // REFAC: Hapus 'forcehttps' dan 'pagecache' dari required filter di lokal
         ],
         'after' => [
-            'pagecache',   // Web Page Caching
-            'performance', // Performance Metrics
-            'toolbar',     // Debug Toolbar
+            'performance',
+            'toolbar',
         ],
     ];
 
@@ -73,16 +71,11 @@ class Filters extends BaseFilters
      */
     public array $globals = [
         'before' => [
-            'forcehttps',
-            // 'pagecache',
-            'csrf',          // AKTIFKAN: Proteksi serangan CSRF secara global pada metode POST/PUT/DELETE
-            'invalidchars',  // AKTIFKAN: Pemblokiran otomatis karakter berbahaya pada input string
+            'csrf',         // Protection CSRF aktif global
+            'invalidchars', // Pembersihan karakter jahat aktif
         ],
         'after' => [
-            // 'pagecache',
-            'performance',
-            'toolbar',
-            'secureheaders', // AKTIFKAN: Mengirimkan proteksi X-Content-Type, X-Frame-Options ke browser
+            'secureheaders',
         ],
     ];
 
