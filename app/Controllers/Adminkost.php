@@ -37,15 +37,28 @@ class Adminkost extends BaseController
     // Fungsi untuk menyimpan data kost baru ke database
     public function save(): \CodeIgniter\HTTP\RedirectResponse
     {
+        // 1. Integrasi Validasi Input Teks dan Aturan Upload File CI4 Native
         $rules = [
             'name'      => 'required|min_length[3]|max_length[150]',
             'price'     => 'required|numeric|greater_than_equal_to[0]',
             'latitude'  => 'required|numeric',
             'longitude' => 'required|numeric',
+            'images'    => [
+                'rules' => 'uploaded[images]'
+                    . '|is_image[images]'
+                    . '|mime_in[images,image/jpg,image/jpeg,image/png,image/webp]'
+                    . '|max_size[images,2048]',
+                'errors' => [
+                    'uploaded' => 'Harap unggah minimal satu foto kost, Kapten.',
+                    'is_image' => 'File yang diunggah harus berupa gambar valid.',
+                    'mime_in'  => 'Ekstensi gambar yang diizinkan hanya JPG, JPEG, PNG, dan WEBP.',
+                    'max_size' => 'Ukuran maksimal foto adalah 2MB per berkas.'
+                ]
+            ]
         ];
 
         if (!$this->validate($rules)) {
-            return redirect()->back()->withInput()->with('error', 'Format input data tidak valid.');
+            return redirect()->back()->withInput()->with('error', $this->validator->listErrors());
         }
 
         $userId    = (int)session()->get('user_id');
@@ -55,16 +68,19 @@ class Adminkost extends BaseController
         $longitude = $this->request->getPost('longitude');
         $features  = $this->request->getPost('features') ?? [];
 
-        // Pemrosesan Array Berkas Gambar Ganda secara Kolektif
+        // 2. Pemrosesan Berkas Gambar Ganda dengan Inspeksi Magic Bytes Server
         $uploadedImages = [];
-        $imageFiles = $this->request->getFileMultiple('images'); // Menangkap array file
+        $imageFiles     = $this->request->getFileMultiple('images');
 
         if ($imageFiles) {
+            $allowedMimes = ['image/jpg', 'image/jpeg', 'image/png', 'image/webp'];
+
             foreach ($imageFiles as $file) {
                 if ($file->isValid() && !$file->hasMoved()) {
-                    // Validasi tipe ekstensi secara manual demi menjaga performa
-                    $mime = $file->getClientMimeType();
-                    if (in_array($mime, ['image/jpg', 'image/jpeg', 'image/png', 'image/webp'])) {
+                    // REFAC: Menggunakan getMimeType() untuk verifikasi byte internal di server
+                    $serverMime = $file->getMimeType();
+
+                    if (in_array($serverMime, $allowedMimes, true)) {
                         $encryptedName = $file->getRandomName();
                         $file->move(ROOTPATH . 'public/uploads/kosts/', $encryptedName);
                         $uploadedImages[] = $encryptedName;
@@ -73,6 +89,7 @@ class Adminkost extends BaseController
             }
         }
 
+        // 3. Eksekusi Database Transaction
         $this->db->transStart();
 
         $kostData = [
@@ -83,14 +100,14 @@ class Adminkost extends BaseController
             'longitude' => (float)$longitude,
             'is_active' => 1,
             'is_full'   => 0,
-            'image'     => !empty($uploadedImages) ? json_encode($uploadedImages) : null // Disimpan sebagai JSON string
+            'image'     => !empty($uploadedImages) ? json_encode($uploadedImages) : null
         ];
 
         $this->kostModel->insert($kostData);
         $kostId = $this->kostModel->getInsertID();
 
         if (!empty($features) && is_array($features)) {
-            $builder = $this->db->table('kost_features');
+            $builder   = $this->db->table('kost_features');
             $batchData = [];
             foreach ($features as $featureId) {
                 $batchData[] = [
@@ -104,7 +121,7 @@ class Adminkost extends BaseController
         $this->db->transComplete();
 
         if ($this->db->transStatus() === false) {
-            return redirect()->back()->withInput()->with('error', 'Terjadi kesalahan internal.');
+            return redirect()->back()->withInput()->with('error', 'Terjadi kesalahan internal saat menyimpan data.');
         }
 
         return redirect()->to(base_url('/owner/dashboard'))->with('success', 'Kost berhasil didaftarkan.');

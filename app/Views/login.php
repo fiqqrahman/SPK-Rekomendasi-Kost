@@ -37,6 +37,7 @@
         <?php endif; ?>
 
         <form method="POST" action="<?= base_url('/auth/attempt') ?>" class="space-y-5">
+            <?= csrf_field() ?>
 
             <div>
                 <label for="email" class="block text-xs font-bold uppercase tracking-wider text-slate-400 mb-2">Alamat Email Mitra</label>

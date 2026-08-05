@@ -89,7 +89,7 @@
                 </h2>
 
                 <form method="POST" action="<?= base_url('/owner/save') ?>" enctype="multipart/form-data" class="space-y-5">
-
+                    <?= csrf_field() ?>
                     <div>
                         <label for="name" class="block text-xs font-bold uppercase tracking-wider text-slate-400 mb-2">Nama Properti Kost</label>
                         <input type="text" id="name" name="name" required placeholder="Contoh: Kost Kahayan Permai"
